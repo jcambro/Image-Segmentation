@@ -31,9 +31,10 @@ import matplotlib.pylab as lab
 
 from sklearn.feature_extraction import image
 from sklearn.cluster import spectral_clustering
+from sklearn.cluster import AgglomerativeClustering 
 
 # Read in the image
-input_image_full = lab.imread("Shapes.png")
+input_image_full = lab.imread("Zebra.jpeg")
 
 # Resize it to 10% of the original size to speed up the processing
 input_image = sp.misc.imresize(input_image_full, 0.2) / 255.
@@ -57,8 +58,9 @@ for i in range (0, input_image.shape[0]):
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 7 
+N_REGIONS = 25 
 
+'''
 #############################################################################
 # Visualize the resulting regions
 
@@ -80,4 +82,28 @@ for assign_labels in ('kmeans', 'discretize'):
     title = 'Spectral clustering: %s, %.2fs' % (assign_labels, (t1 - t0))
     print(title)
     plt.title(title)
+plt.show()
+'''
+
+# #############################################################################
+# Compute clustering
+print("Compute structured hierarchical clustering...")
+st = time.time()
+ward = AgglomerativeClustering(n_clusters=N_REGIONS, linkage='ward')
+                               
+ward.fit(graph)
+label = np.reshape(ward.labels_, (input_image.shape[0], input_image.shape[1]))
+print("Elapsed time: ", time.time() - st)
+print("Number of pixels: ", label.size)
+print("Number of clusters: ", np.unique(label).size)
+
+# #############################################################################
+# Plot the results on an image
+plt.figure(figsize=(5, 5))
+plt.imshow(input_image)
+for l in range(N_REGIONS):
+    plt.contour(label == l, contours=1,
+                colors=[plt.cm.spectral(l / float(N_REGIONS)), ])
+plt.xticks(())
+plt.yticks(())
 plt.show()
