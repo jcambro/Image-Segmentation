@@ -33,16 +33,12 @@ from sklearn.feature_extraction import image
 from sklearn.cluster import spectral_clustering
 
 # Read in the image
-input_image = lab.imread("Shapes.png")
+input_image_full = lab.imread("Shapes.png")
 
 # Resize it to 10% of the original size to speed up the processing
-input_image = sp.misc.imresize(input_image, 0.1) / 255.
+input_image = sp.misc.imresize(input_image_full, 0.2) / 255.
 
-print(input_image.shape)
-print(input_image[0, 0])
-print(input_image[1, 0])
-
-dist_matrix = np.zeros((input_image.shape[0] * input_image.shape[1], input_image.shape[0] * input_image.shape[1] ))
+graph = np.zeros((input_image.shape[0] * input_image.shape[1], input_image.shape[0] * input_image.shape[1] ))
 for i in range (0, input_image.shape[0]):
     for j in range (0, input_image.shape[1]):
         for i2 in range(i, input_image.shape[0]):
@@ -50,36 +46,18 @@ for i in range (0, input_image.shape[0]):
                 dist_sum = 0
                 for c in range (0, input_image.shape[2]):
                     dist_sum += (input_image[i2, j2, c] - input_image[i, j, c])**2 
-                first_idx = i * input_image.shape[0] + j
-                second_idx = i2 * input_image.shape[0] + j2
+                first_idx = i * input_image.shape[1] + j
+                second_idx = i2 * input_image.shape[1] + j2
                 
-                dist = math.sqrt(dist_sum)
-                dist_matrix[first_idx, second_idx] = dist
-                dist_matrix[second_idx, first_idx] = dist
-
-print("DISTANCE")
-print(dist_matrix[0, 2])
-
-        
-plt.imshow(input_image)
-plt.show()
-
-'''
-
-# Convert the image into a graph with the value of the gradient on the
-# edges.
-graph = image.img_to_graph(input_image)
-
-# Take a decreasing function of the gradient: an exponential
-# The smaller beta is, the more independent the segmentation is of the
-# actual image. For beta=1, the segmentation is close to a voronoi
-beta = 5
-eps = 1e-6
-graph.data = np.exp(-beta * graph.data / graph.data.std()) + eps
+                dist = math.sqrt(dist_sum) / math.sqrt(3)
+                if dist >= 1:
+                    print(dist)
+                graph[first_idx, second_idx] = dist
+                graph[second_idx, first_idx] = dist
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 5
+N_REGIONS = 7 
 
 #############################################################################
 # Visualize the resulting regions
@@ -88,11 +66,12 @@ for assign_labels in ('kmeans', 'discretize'):
     t0 = time.time()
     labels = spectral_clustering(graph, n_clusters=N_REGIONS,
                                  assign_labels=assign_labels, random_state=1)
+
     t1 = time.time()
-    labels = labels.reshape(input_image.shape)
+    labels = labels.reshape((input_image.shape[0], input_image.shape[1]))
 
     plt.figure(figsize=(5, 5))
-    plt.imshow(input_image, cmap=plt.cm.gray)
+    plt.imshow(input_image)
     for l in range(N_REGIONS):
         plt.contour(labels == l, contours=1,
                     colors=[plt.cm.spectral(l / float(N_REGIONS))])
@@ -102,4 +81,3 @@ for assign_labels in ('kmeans', 'discretize'):
     print(title)
     plt.title(title)
 plt.show()
-'''
