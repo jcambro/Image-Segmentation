@@ -34,10 +34,10 @@ from sklearn.cluster import spectral_clustering
 from sklearn.cluster import AgglomerativeClustering 
 
 # Read in the image
-input_image_full = lab.imread("Zebra.jpeg")
+input_image_full = lab.imread("Stop.jpeg")
 
 # Resize it to 10% of the original size to speed up the processing
-input_image = sp.misc.imresize(input_image_full, 0.2) / 255.
+input_image = sp.misc.imresize(input_image_full, 0.35) / 255.
 
 graph = np.zeros((input_image.shape[0] * input_image.shape[1], input_image.shape[0] * input_image.shape[1] ))
 for i in range (0, input_image.shape[0]):
@@ -51,14 +51,12 @@ for i in range (0, input_image.shape[0]):
                 second_idx = i2 * input_image.shape[1] + j2
                 
                 dist = math.sqrt(dist_sum) / math.sqrt(3)
-                if dist >= 1:
-                    print(dist)
                 graph[first_idx, second_idx] = dist
                 graph[second_idx, first_idx] = dist
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 25 
+N_REGIONS = 15 
 
 '''
 #############################################################################
