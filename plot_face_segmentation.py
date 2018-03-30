@@ -36,7 +36,7 @@ from sklearn.cluster import spectral_clustering
 input_image = lab.imread("Shapes.png")
 
 # Resize it to 10% of the original size to speed up the processing
-input_image = sp.misc.imresize(input_image, 0.25) / 255.
+input_image = sp.misc.imresize(input_image, 0.1) / 255.
 
 print(input_image.shape)
 print(input_image[0, 0])
@@ -53,7 +53,9 @@ for i in range (0, input_image.shape[0]):
                 first_idx = i * input_image.shape[0] + j
                 second_idx = i2 * input_image.shape[0] + j2
                 
-                dist_matrix[first_idx, second_idx] = math.sqrt(dist_sum)
+                dist = math.sqrt(dist_sum)
+                dist_matrix[first_idx, second_idx] = dist
+                dist_matrix[second_idx, first_idx] = dist
 
 print("DISTANCE")
 print(dist_matrix[0, 2])
