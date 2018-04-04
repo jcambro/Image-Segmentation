@@ -71,18 +71,24 @@ for i in range (0, input_image.shape[0]):
         input_image_gray[i, j] += input_image[i, j, 1] * 0.7154
         input_image_gray[i, j] += input_image[i, j, 2] * 0.0721
 
+print("GRAYSCALED")
+
 graph = image.img_to_graph(input_image_gray)
+
+print("GRAPHED")
 
 # Take a decreasing function of the gradient: an exponential
 # The smaller beta is, the more independent the segmentation is of the
 # actual image. For beta=1, the segmentation is close to a voronoi
-beta = 5 
+beta = 7 
 eps = 1e-6
 graph.data = np.exp(-beta * graph.data / graph.data.std()) + eps
 
+print("EXPONENTIALED")
+
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 15 
+N_REGIONS = 23 
 
 #############################################################################
 # Visualize the resulting regions
