@@ -37,8 +37,9 @@ from sklearn.cluster import AgglomerativeClustering
 input_image_full = lab.imread("Stop.jpeg")
 
 # Resize it to 10% of the original size to speed up the processing
-input_image = sp.misc.imresize(input_image_full, 0.35) / 255.
+input_image = sp.misc.imresize(input_image_full, 0.3) / 255.
 
+'''
 graph = np.zeros((input_image.shape[0] * input_image.shape[1], input_image.shape[0] * input_image.shape[1] ))
 for i in range (0, input_image.shape[0]):
     for j in range (0, input_image.shape[1]):
@@ -53,36 +54,52 @@ for i in range (0, input_image.shape[0]):
                 dist = math.sqrt(dist_sum) / math.sqrt(3)
                 graph[first_idx, second_idx] = dist
                 graph[second_idx, first_idx] = dist
+'''
+
+input_image_gray = np.zeros((input_image.shape[0], input_image.shape[1]))
+
+for i in range (0, input_image.shape[0]):
+    for j in range (0, input_image.shape[1]):
+        input_image_gray[i, j] = 0
+        '''
+        input_image_gray[i, j] += input_image[i, j, 2] * 0.299
+        input_image_gray[i, j] += input_image[i, j, 1] * 0.587
+        input_image_gray[i, j] += input_image[i, j, 0] * 0.114
+        '''
+        
+        input_image_gray[i, j] += input_image[i, j, 0] * 0.2125
+        input_image_gray[i, j] += input_image[i, j, 1] * 0.7154
+        input_image_gray[i, j] += input_image[i, j, 2] * 0.0721
+
+graph = image.img_to_graph(input_image_gray)
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 15 
+N_REGIONS = 7 
 
-'''
 #############################################################################
 # Visualize the resulting regions
 
-for assign_labels in ('kmeans', 'discretize'):
-    t0 = time.time()
-    labels = spectral_clustering(graph, n_clusters=N_REGIONS,
-                                 assign_labels=assign_labels, random_state=1)
+t0 = time.time()
+labels = spectral_clustering(graph, n_clusters=N_REGIONS, random_state=1)
 
-    t1 = time.time()
-    labels = labels.reshape((input_image.shape[0], input_image.shape[1]))
+t1 = time.time()
+labels = labels.reshape((input_image.shape[0], input_image.shape[1]))
 
-    plt.figure(figsize=(5, 5))
-    plt.imshow(input_image)
-    for l in range(N_REGIONS):
-        plt.contour(labels == l, contours=1,
-                    colors=[plt.cm.spectral(l / float(N_REGIONS))])
-    plt.xticks(())
-    plt.yticks(())
-    title = 'Spectral clustering: %s, %.2fs' % (assign_labels, (t1 - t0))
-    print(title)
-    plt.title(title)
+plt.figure(figsize=(5, 5))
+plt.imshow(input_image_gray, cmap=plt.cm.gray)
+for l in range(N_REGIONS):
+    plt.contour(labels == l, contours=1,
+                colors=[plt.cm.spectral(l / float(N_REGIONS))])
+plt.xticks(())
+plt.yticks(())
+title = 'Spectral clustering: %s, %.2fs' % ("kmeans", (t1 - t0))
+print(title)
+plt.title(title)
 plt.show()
-'''
 
+
+'''
 # #############################################################################
 # Compute clustering
 print("Compute structured hierarchical clustering...")
@@ -105,3 +122,4 @@ for l in range(N_REGIONS):
 plt.xticks(())
 plt.yticks(())
 plt.show()
+'''
