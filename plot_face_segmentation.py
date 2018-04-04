@@ -88,7 +88,7 @@ print("EXPONENTIALED")
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 23 
+N_REGIONS = 7 
 
 #############################################################################
 # Visualize the resulting regions
