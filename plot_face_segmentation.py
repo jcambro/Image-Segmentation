@@ -34,10 +34,10 @@ from sklearn.cluster import spectral_clustering
 from sklearn.cluster import AgglomerativeClustering 
 
 # Read in the image
-input_image_full = lab.imread("Squirrel.jpeg")
+input_image_full = lab.imread("Stop.jpeg")
 
 # Resize it to 10% of the original size to speed up the processing
-input_image = sp.misc.imresize(input_image_full, 0.99) / 255.
+input_image = sp.misc.imresize(input_image_full, 0.9) / 255.
 
 '''
 graph = np.zeros((input_image.shape[0] * input_image.shape[1], input_image.shape[0] * input_image.shape[1] ))
@@ -88,7 +88,7 @@ print("EXPONENTIALED")
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 15 
+N_REGIONS = 25 
 
 #############################################################################
 # Visualize the resulting regions
