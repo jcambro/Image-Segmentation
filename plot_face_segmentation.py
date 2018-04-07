@@ -79,13 +79,15 @@ print("GRAYSCALED")
 graph = image.img_to_graph(input_image_gray)
 
 print("GRAPHED")
+print(graph.shape)
+print(type(graph.data))
 
 # Take a decreasing function of the gradient: an exponential
 # The smaller beta is, the more independent the segmentation is of the
 # actual image. For beta=1, the segmentation is close to a voronoi
 beta = 12 
 eps = 1e-6
-graph.data = np.exp(-beta * graph.data / graph.data.std()) + eps
+graph.data = np.exp(-beta * graph.data / (graph.data.std() + eps)) + eps
 
 print("EXPONENTIALED")
 
