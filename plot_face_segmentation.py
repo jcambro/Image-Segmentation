@@ -34,10 +34,10 @@ from sklearn.cluster import spectral_clustering
 from sklearn.cluster import AgglomerativeClustering 
 
 # Read in the image
-input_image_full = lab.imread("Ballerina.jpg")
+input_image_full = lab.imread("BetterStop.jpg")
 
 # Resize it to 10% of the original size to speed up the processing
-input_image = sp.misc.imresize(input_image_full, 0.5) / 255.
+input_image = sp.misc.imresize(input_image_full, 0.3) / 255.
 
 
 '''
@@ -85,7 +85,7 @@ print(type(graph.data))
 # Take a decreasing function of the gradient: an exponential
 # The smaller beta is, the more independent the segmentation is of the
 # actual image. For beta=1, the segmentation is close to a voronoi
-beta = 12 
+beta = 5 
 eps = 1e-6
 graph.data = np.exp(-beta * graph.data / (graph.data.std() + eps)) + eps
 
@@ -93,7 +93,7 @@ print("EXPONENTIALED")
 
 # Apply spectral clustering (this step goes much faster if you have pyamg
 # installed)
-N_REGIONS = 8 
+N_REGIONS = 10 
 
 #############################################################################
 # Visualize the resulting regions
